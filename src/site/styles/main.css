@@ -423,6 +423,7 @@ a:hover { color: var(--accent-hover); }
     padding: 16px 18px;
   }
   .post-card-date { order: -1; }
+}
 
 /* ---- Search Trigger (FAB) ---- */
 
@@ -456,16 +457,6 @@ a:hover { color: var(--accent-hover); }
   border-color: var(--accent);
   color: var(--accent);
   box-shadow: 0 8px 24px rgba(28, 25, 23, 0.12);
-}
-
-@media (max-width: 640px) {
-  .search-trigger {
-    bottom: 20px;
-    right: 20px;
-    padding: 14px;
-    border-radius: 50%;
-  }
-  .search-trigger-text { display: none; }
 }
 
 /* ---- Search Overlay ---- */
@@ -506,11 +497,14 @@ a:hover { color: var(--accent-hover); }
   position: relative;
   width: 100%;
   max-width: 560px;
+  max-height: 80vh;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow: 0 24px 48px rgba(28, 25, 23, 0.18);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   transform: translateY(-8px) scale(0.98);
   transition: transform 0.2s;
 }
@@ -525,6 +519,7 @@ a:hover { color: var(--accent-hover); }
   gap: 12px;
   padding: 16px 20px;
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .search-icon {
@@ -560,12 +555,8 @@ a:hover { color: var(--accent-hover); }
   line-height: 1.6;
 }
 
-@media (min-width: 641px) {
-  .search-kbd { display: inline-block; }
-}
-
 .search-results {
-  max-height: 50vh;
+  flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
@@ -626,21 +617,31 @@ a:hover { color: var(--accent-hover); }
   color: var(--text-3);
 }
 
+/* ---- Responsive Search ---- */
+
+@media (min-width: 641px) {
+  .search-kbd { display: inline-block; }
+}
+
 @media (max-width: 640px) {
+  .search-trigger {
+    bottom: 20px;
+    right: 20px;
+    padding: 14px;
+    border-radius: 50%;
+  }
+  .search-trigger-text { display: none; }
   .search-overlay {
     padding: 0;
     align-items: flex-start;
   }
   .search-dialog {
     max-width: none;
+    max-height: 70vh;
     border-radius: 0 0 16px 16px;
-    margin-top: 0;
   }
   .search-input-wrap {
     padding: 18px 16px;
-  }
-  .search-results {
-    max-height: 60vh;
   }
   .search-result-item {
     padding: 14px 16px;
