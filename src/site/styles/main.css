@@ -425,6 +425,28 @@ a:hover { color: var(--accent-hover); }
   .post-card-date { order: -1; }
 }
 
+/* ---- Mobile Ad ---- */
+
+.ad-mobile {
+  display: none;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.ad-mobile--inpost {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 1199px) {
+  .ad-mobile {
+    display: block;
+    margin: 24px auto;
+    min-height: 90px;
+  }
+}
+
 /* ---- Search Trigger (FAB) ---- */
 
 .search-trigger {
