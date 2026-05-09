@@ -6,6 +6,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/site/styles": "styles" });
   eleventyConfig.addPassthroughCopy({ "src/site/ads.txt": "ads.txt" });
   eleventyConfig.addPassthroughCopy({ "src/site/robots.txt": "robots.txt" });
+  eleventyConfig.addPassthroughCopy({ "src/site/favicon.svg": "favicon.svg" });
 
   // Date formatting filter
   eleventyConfig.addFilter("isodate", (date) => {
