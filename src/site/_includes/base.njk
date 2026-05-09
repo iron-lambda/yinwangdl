@@ -30,10 +30,6 @@
           </div>
           <h1 class="site-title">{{ meta.siteName }}</h1>
           <p class="site-desc">自动备份 <a href="https://www.yinwang.org">yinwang.org</a> 博客文章 | <a href="https://github.com/jrtxio/yinwangdl">GitHub</a></p>
-          <div class="site-search">
-            <input type="text" id="search-input" placeholder="搜索文章..." autocomplete="off">
-            <div id="search-results" class="search-results"></div>
-          </div>
         </div>
       </header>
       <main class="container">
@@ -55,49 +51,70 @@
       <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </aside>
   </div>
+
+<div id="search-overlay" class="search-overlay">
+  <div class="search-backdrop"></div>
+  <div class="search-dialog">
+    <div class="search-input-wrap">
+      <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="18" y2="18"/></svg>
+      <input type="text" id="search-input" placeholder="搜索文章标题…" autocomplete="off">
+      <kbd class="search-kbd">Esc</kbd>
+    </div>
+    <div id="search-results" class="search-results">
+      <div class="search-hint">输入关键词开始搜索</div>
+    </div>
+  </div>
+</div>
+
+<button id="search-trigger" class="search-trigger" aria-label="搜索">
+  <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="18" y2="18"/></svg>
+  <span class="search-trigger-text">搜索</span>
+</button>
+
 <script>
 (function(){
+  var trigger=document.getElementById('search-trigger');
+  var overlay=document.getElementById('search-overlay');
+  var backdrop=overlay.querySelector('.search-backdrop');
   var input=document.getElementById('search-input');
   var results=document.getElementById('search-results');
   var searchData=null;
 
+  function open(){overlay.classList.add('active');document.body.style.overflow='hidden';input.focus();}
+  function close(){overlay.classList.remove('active');document.body.style.overflow='';input.value='';results.innerHTML='<div class="search-hint">输入关键词开始搜索</div>';}
+
+  trigger.addEventListener('click',open);
+  backdrop.addEventListener('click',close);
+
+  document.addEventListener('keydown',function(e){
+    if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();overlay.classList.contains('active')?close():open();}
+    if(e.key==='Escape'&&overlay.classList.contains('active'))close();
+  });
+
   function load(cb){
     if(searchData){cb();return;}
-    fetch('/search.json').then(function(r){return r.json();}).then(function(d){searchData=d;cb();});
+    fetch('/search.json').then(function(r){return r.json();}).then(function(d){searchData=d;cb();}).catch(function(){results.innerHTML='<div class="search-hint">加载失败，请刷新重试</div>';});
   }
 
   input.addEventListener('input',function(){
     var q=this.value.trim().toLowerCase();
-    if(!q){results.style.display='none';results.innerHTML='';return;}
+    if(!q){results.innerHTML='<div class="search-hint">输入关键词开始搜索</div>';return;}
     load(function(){
-      var matched=searchData.filter(function(p){
-        return p.title.toLowerCase().indexOf(q)!==-1;
-      });
-      if(!matched.length){
-        results.innerHTML='<div class="search-empty">未找到相关文章</div>';
-        results.style.display='block';
-        return;
-      }
+      var matched=searchData.filter(function(p){return p.title.toLowerCase().indexOf(q)!==-1;});
+      if(!matched.length){results.innerHTML='<div class="search-hint">没有找到「'+q.replace(/</g,'&lt;')+'」相关的文章</div>';return;}
       var html='';
-      matched.slice(0,20).forEach(function(p){
+      matched.slice(0,15).forEach(function(p){
+        var t=p.title;
+        var idx=t.toLowerCase().indexOf(q);
+        if(idx!==-1){t=t.substring(0,idx)+'<mark>'+t.substring(idx,idx+q.length)+'</mark>'+t.substring(idx+q.length);}
         html+='<a href="'+p.url+'" class="search-result-item">'
-          +'<span class="search-result-title">'+p.title+'</span>'
+          +'<span class="search-result-title">'+t+'</span>'
           +'<span class="search-result-date">'+p.date+'</span>'
           +'</a>';
       });
+      if(matched.length>15)html+='<div class="search-hint">还有 '+(matched.length-15)+' 篇相关文章</div>';
       results.innerHTML=html;
-      results.style.display='block';
     });
-  });
-
-  document.addEventListener('click',function(e){
-    if(!input.contains(e.target)&&!results.contains(e.target)){
-      results.style.display='none';
-    }
-  });
-
-  input.addEventListener('focus',function(){
-    if(results.innerHTML)results.style.display='block';
   });
 })();
 </script>
